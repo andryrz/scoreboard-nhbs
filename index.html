@@ -18,8 +18,10 @@
     
     .score-display { text-align: center; font-size: 2.5rem; font-weight: bold; margin: 10px 0; color: #90e0ef; }
     
-    /* BOUTONS DE SCORE */
+    /* BOUTONS DE CONTROL */
     .btn-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+    .btn-group-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    
     button { color: white; border: none; padding: 10px 5px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
     button:active { opacity: 0.8; }
     
@@ -79,6 +81,10 @@
   <div class="card">
     <label>PÉRIODE / QT</label>
     <input type="text" id="period" value="Q1" onchange="updateData()">
+    <div class="btn-group-2">
+      <button class="btn-minus" onclick="changePeriod(-1)">-1 QT</button>
+      <button class="btn-plus-accent" onclick="changePeriod(1)">+1 QT</button>
+    </div>
   </div>
 
   <!-- FIREBASE SDK -->
@@ -88,7 +94,7 @@
 
     // --- CONFIGURATION FIREBASE ---
     const firebaseConfig = {
-      databaseURL: "https://scoreboard-live-98477-default-rtdb.europe-west1.firebasedatabase.app" // REMPLACER PAR VOTRE URL FIREBASE
+      databaseURL: "https://VOTRE_FIREBASE_ID-default-rtdb.firebaseio.com" // REMPLACER PAR VOTRE URL FIREBASE
     };
 
     const app = initializeApp(firebaseConfig);
@@ -100,6 +106,7 @@
       teamB: "EQUIPE B",
       scoreA: 0,
       scoreB: 0,
+      periodNum: 1,
       period: "Q1"
     };
 
@@ -130,6 +137,15 @@
       document.getElementById('scoreA_val').innerText = state.scoreA;
       document.getElementById('scoreB_val').innerText = state.scoreB;
       
+      set(scoreRef, state);
+    };
+
+    window.changePeriod = (delta) => {
+      if (!state.periodNum) state.periodNum = 1;
+      state.periodNum = Math.max(1, state.periodNum + delta);
+      state.period = "Q" + state.periodNum;
+      
+      document.getElementById('period').value = state.period;
       set(scoreRef, state);
     };
   </script>
