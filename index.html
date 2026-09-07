@@ -27,6 +27,33 @@
     .btn-minus { background: #3a2228; color: #ff6b6b; border: 1px solid #5c2b35; }
     .btn-plus { background: #c1121f; }
     .btn-plus-accent { background: #780000; }
+    
+    .btn-3pts { 
+      background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%); 
+      color: #000; 
+      font-size: 1.05rem; 
+      padding: 12px; 
+      margin-top: 10px; 
+      width: 100%; 
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(251, 133, 0, 0.4);
+    }
+
+    .btn-reset {
+      background: #dc3545;
+      color: #fff;
+      font-size: 1rem;
+      padding: 12px;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid #ff4d4d;
+      transition: background 0.2s ease;
+    }
+    .btn-reset:hover {
+      background: #b02a37;
+    }
   </style>
 </head>
 <body>
@@ -51,8 +78,10 @@
       <div class="btn-group">
         <button class="btn-plus" onclick="changeScore('A', 1)">+1</button>
         <button class="btn-plus-accent" onclick="changeScore('A', 2)">+2</button>
-        <button class="btn-plus-accent" onclick="changeScore('A', 3)">+3</button>
       </div>
+      
+      <!-- BOUTON 3PTS -->
+      <button class="btn-3pts" onclick="trigger3PTR('A')">🏀 +3 PTS (ANIMATION)</button>
     </div>
 
     <!-- ÉQUIPE EXTÉRIEUR -->
@@ -71,8 +100,10 @@
       <div class="btn-group">
         <button class="btn-plus" onclick="changeScore('B', 1)">+1</button>
         <button class="btn-plus-accent" onclick="changeScore('B', 2)">+2</button>
-        <button class="btn-plus-accent" onclick="changeScore('B', 3)">+3</button>
       </div>
+
+      <!-- BOUTON 3PTS -->
+      <button class="btn-3pts" onclick="trigger3PTR('B')">🏀 +3 PTS (ANIMATION)</button>
     </div>
   </div>
 
@@ -86,15 +117,35 @@
     </div>
   </div>
 
-  <!-- CHOIX DU THÈME GRAPHIQUE -->
+  <!-- ACTIONS GLOBALES (RÉINITIALISATION) -->
   <div class="card">
-    <label>THÈME COULEUR OVERLAY</label>
-    <select id="theme_select" onchange="updateData()">
-      <option value="nhbs-red">🔴 NHBS Red (Rouge & Noir)</option>
-      <option value="ocean-blue">🔵 Ocean Blue (Bleu Cyan)</option>
-      <option value="dark-gold">🟡 Dark Gold (Noir & Or)</option>
-      <option value="emerald-green">🟢 Emerald Green (Vert Émeraude)</option>
-    </select>
+    <label>ACTIONS MATCH</label>
+    <button class="btn-reset" onclick="resetMatch()">🔄 Réinitialiser le Match (Scores à 0 & Q1)</button>
+  </div>
+
+  <!-- PERSONNALISATION DE L'APPARENCE -->
+  <div class="grid">
+    <div class="card">
+      <label>THÈME COULEUR</label>
+      <select id="theme_select" onchange="updateData()">
+        <option value="nhbs-red">🔴 NHBS Red (Rouge & Noir)</option>
+        <option value="ocean-blue">🔵 Ocean Blue (Bleu Cyan)</option>
+        <option value="dark-gold">🟡 Dark Gold (Noir & Or)</option>
+        <option value="emerald-green">🟢 Emerald Green (Vert Émeraude)</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <label>POLICE DE CARACTÈRES</label>
+      <select id="font_select" onchange="updateData()">
+        <option value="font-default">Teko / Montserrat (Par défaut)</option>
+        <option value="font-impact">Impact (Athlétique Classique)</option>
+        <option value="font-bebas">Bebas Neue (Style Basket / NBA)</option>
+        <option value="font-chakra">Chakra Petch (Futuriste / Esport)</option>
+        <option value="font-russo">Russo One (Bloc Imposeur)</option>
+        <option value="font-oswald">Oswald (Épuré & Condensé)</option>
+      </select>
+    </div>
   </div>
 
   <!-- FIREBASE SDK -->
@@ -117,7 +168,9 @@
       scoreB: 0,
       periodNum: 1,
       period: "Q1",
-      theme: "nhbs-red"
+      theme: "nhbs-red",
+      font: "font-default",
+      threePointer: null
     };
 
     onValue(scoreRef, (snapshot) => {
@@ -130,6 +183,7 @@
         document.getElementById('scoreB_val').innerText = state.scoreB !== undefined ? state.scoreB : 0;
         document.getElementById('period').value = state.period || "Q1";
         document.getElementById('theme_select').value = state.theme || "nhbs-red";
+        document.getElementById('font_select').value = state.font || "font-default";
       }
     });
 
@@ -138,6 +192,7 @@
       state.teamB = document.getElementById('teamB_name').value;
       state.period = document.getElementById('period').value;
       state.theme = document.getElementById('theme_select').value;
+      state.font = document.getElementById('font_select').value;
       set(scoreRef, state);
     };
 
@@ -148,6 +203,21 @@
       document.getElementById('scoreA_val').innerText = state.scoreA;
       document.getElementById('scoreB_val').innerText = state.scoreB;
       
+      set(scoreRef, state);
+    };
+
+    window.trigger3PTR = (team) => {
+      if (team === 'A') state.scoreA = (state.scoreA || 0) + 3;
+      if (team === 'B') state.scoreB = (state.scoreB || 0) + 3;
+
+      state.threePointer = {
+        team: team,
+        timestamp: Date.now()
+      };
+
+      document.getElementById('scoreA_val').innerText = state.scoreA;
+      document.getElementById('scoreB_val').innerText = state.scoreB;
+
       set(scoreRef, state);
     };
 
@@ -166,6 +236,21 @@
       
       document.getElementById('period').value = state.period;
       set(scoreRef, state);
+    };
+
+    window.resetMatch = () => {
+      if (confirm("Voulez-vous vraiment réinitialiser les scores à 0 et le quart-temps à Q1 ?")) {
+        state.scoreA = 0;
+        state.scoreB = 0;
+        state.periodNum = 1;
+        state.period = "Q1";
+        
+        document.getElementById('scoreA_val').innerText = 0;
+        document.getElementById('scoreB_val').innerText = 0;
+        document.getElementById('period').value = "Q1";
+
+        set(scoreRef, state);
+      }
     };
   </script>
 </body>

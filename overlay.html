@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Scoreboard Overlay - Dynamic Themes</title>
-  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+  <title>Scoreboard Overlay - +3 In-Score Animation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Chakra+Petch:wght@700&family=Montserrat:wght@800&family=Oswald:wght@700&family=Russo+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     
@@ -20,7 +20,6 @@
       align-items: center;
     }
 
-    /* STRUCTURE DE BASE */
     .scoreboard-box {
       display: inline-flex;
       align-items: center;
@@ -28,6 +27,7 @@
       padding: 0;
       overflow: hidden;
       transition: all 0.4s ease;
+      position: relative;
     }
 
     .team {
@@ -45,8 +45,9 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
+    /* CONTENEUR SCORE AVEC SUPPORT D'ANIMATION INTÉGRÉE */
     .score-container {
-      min-width: 55px;
+      min-width: 65px;
       height: 60px;
       display: flex;
       align-items: center;
@@ -54,13 +55,65 @@
       padding: 0 15px;
       border-left: 1px solid rgba(255, 255, 255, 0.15);
       border-right: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative;
     }
 
     .score {
-      font-family: 'Teko', sans-serif;
       font-size: 2.8rem;
       font-weight: 700;
       line-height: 1;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    /* ANIMATION "+3" INTÉGRÉE DANS LE SCORE */
+    .plus-three-pop {
+      position: absolute;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: #ffb703;
+      text-shadow: 0 0 15px rgba(255, 183, 3, 0.9), 0 0 2px #ffffff;
+      opacity: 0;
+      transform: scale(0.3) translateY(10px);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .plus-three-pop.active {
+      animation: inScorePlusThree 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes inScorePlusThree {
+      0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(10px);
+      }
+      20% {
+        opacity: 1;
+        transform: scale(1.4) translateY(-3px);
+      }
+      35% {
+        transform: scale(1) translateY(0);
+      }
+      75% {
+        opacity: 1;
+        transform: scale(1) translateY(-10px);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-25px);
+      }
+    }
+
+    /* EFFET DE REBOND/FLASH DU CHIFFRE DE SCORE */
+    .score.bump {
+      animation: scoreBump 0.4s ease-out;
+    }
+
+    @keyframes scoreBump {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.35); color: #ffb703; }
+      100% { transform: scale(1); }
     }
 
     .divider {
@@ -79,7 +132,6 @@
     }
 
     .period {
-      font-family: 'Teko', sans-serif;
       font-size: 2.2rem;
       font-weight: 700;
       color: #ffffff;
@@ -89,11 +141,29 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
-    /* =================================================== */
-    /* STYLES DES THÈMES */
-    /* =================================================== */
+    /* POLICES */
+    .font-default .score, .font-default .period { font-family: 'Teko', sans-serif; }
+    .font-default .team-name { font-family: 'Montserrat', sans-serif; }
 
-    /* 🔴 THÈME NHBS RED (Rouge Intense & Noir Carbon) */
+    .font-impact .score, .font-impact .period, .font-impact .team-name { font-family: 'Impact', 'Arial Black', sans-serif; }
+    .font-impact .score { font-size: 2.4rem; }
+    .font-impact .period { font-size: 1.8rem; }
+
+    .font-bebas .score, .font-bebas .period, .font-bebas .team-name { font-family: 'Bebas Neue', cursive; letter-spacing: 1.5px; }
+    .font-bebas .score { font-size: 3rem; }
+
+    .font-chakra .score, .font-chakra .period, .font-chakra .team-name { font-family: 'Chakra Petch', sans-serif; }
+    .font-chakra .score { font-size: 2.3rem; }
+    .font-chakra .period { font-size: 1.7rem; }
+
+    .font-russo .score, .font-russo .period, .font-russo .team-name { font-family: 'Russo One', sans-serif; }
+    .font-russo .score { font-size: 2.2rem; }
+    .font-russo .period { font-size: 1.6rem; }
+
+    .font-oswald .score, .font-oswald .period, .font-oswald .team-name { font-family: 'Oswald', sans-serif; }
+    .font-oswald .score { font-size: 2.6rem; }
+
+    /* THÈMES COULEURS */
     .theme-nhbs-red {
       background: linear-gradient(135deg, #120305 0%, #2b080c 100%);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(224, 30, 55, 0.3);
@@ -105,7 +175,6 @@
     .theme-nhbs-red .divider { background: rgba(224, 30, 55, 0.4); }
     .theme-nhbs-red .info-box { background: linear-gradient(135deg, #ef233c 0%, #a8031d 100%); }
 
-    /* 🔵 THÈME OCEAN BLUE */
     .theme-ocean-blue {
       background: linear-gradient(135deg, #021526 0%, #032541 100%);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 180, 216, 0.2);
@@ -117,7 +186,6 @@
     .theme-ocean-blue .divider { background: rgba(0, 180, 216, 0.3); }
     .theme-ocean-blue .info-box { background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); }
 
-    /* 🟡 THÈME DARK GOLD */
     .theme-dark-gold {
       background: linear-gradient(135deg, #111111 0%, #222222 100%);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.2);
@@ -129,7 +197,6 @@
     .theme-dark-gold .divider { background: rgba(212, 175, 55, 0.4); }
     .theme-dark-gold .info-box { background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); }
 
-    /* 🟢 THÈME EMERALD GREEN */
     .theme-emerald-green {
       background: linear-gradient(135deg, #051e11 0%, #0b3c21 100%);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(46, 204, 113, 0.2);
@@ -144,13 +211,14 @@
 </head>
 <body>
 
-  <div class="scoreboard-box theme-nhbs-red" id="boardBox">
+  <div class="scoreboard-box theme-nhbs-red font-default" id="boardBox">
     <!-- ÉQUIPE A -->
     <div class="team">
       <span class="team-name" id="teamA">EQUIPE A</span>
     </div>
     <div class="score-container">
       <span class="score" id="scoreA">0</span>
+      <div class="plus-three-pop" id="popA">+3</div>
     </div>
 
     <!-- SÉPARATEUR -->
@@ -159,6 +227,7 @@
     <!-- ÉQUIPE B -->
     <div class="score-container">
       <span class="score" id="scoreB">0</span>
+      <div class="plus-three-pop" id="popB">+3</div>
     </div>
     <div class="team">
       <span class="team-name" id="teamB">EQUIPE B</span>
@@ -182,6 +251,8 @@
     const db = getDatabase(app);
     const scoreRef = ref(db, 'scoreboard');
 
+    let last3PointerTimestamp = null;
+
     onValue(scoreRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -191,13 +262,37 @@
         if (data.scoreB !== undefined) document.getElementById('scoreB').innerText = data.scoreB;
         if (data.period !== undefined) document.getElementById('period').innerText = data.period;
         
-        // Mise à jour dynamique du thème
-        if (data.theme) {
-          const boardBox = document.getElementById('boardBox');
-          boardBox.className = "scoreboard-box theme-" + data.theme;
+        // Thème & Font
+        const boardBox = document.getElementById('boardBox');
+        const activeTheme = data.theme || "nhbs-red";
+        const activeFont = data.font || "font-default";
+        boardBox.className = `scoreboard-box theme-${activeTheme} ${activeFont}`;
+
+        // Déclenchement de l'animation +3
+        if (data.threePointer && data.threePointer.timestamp !== last3PointerTimestamp) {
+          last3PointerTimestamp = data.threePointer.timestamp;
+          trigger3PointInScore(data.threePointer.team);
         }
       }
     });
+
+    function trigger3PointInScore(team) {
+      const popElem = document.getElementById(team === 'A' ? 'popA' : 'popB');
+      const scoreElem = document.getElementById(team === 'A' ? 'scoreA' : 'scoreB');
+
+      // Réinitialisation des classes d'animation
+      popElem.classList.remove('active');
+      scoreElem.classList.remove('bump');
+
+      void popElem.offsetWidth; // Force Reflow CSS
+
+      popElem.classList.add('active');
+      scoreElem.classList.add('bump');
+
+      setTimeout(() => {
+        scoreElem.classList.remove('bump');
+      }, 400);
+    }
   </script>
 </body>
 </html>
