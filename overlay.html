@@ -1,9 +1,329 @@
-<!-- Dans la structure HTML du scoreboard -->
-<div class="score-container">
-  <span class="score" id="scoreA">0</span>
-  <!-- BADGE ANIMÉ AVEC ÉMOJI 👌 -->
-  <div class="hand-3pt-badge" id="badgeA">
-    <span class="hand-icon">👌</span>
-    <span class="hand-text">+3</span>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoreboard Overlay - 3PT In-Score Animation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Chakra+Petch:wght@700&family=Montserrat:wght@800&family=Oswald:wght@700&family=Russo+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    
+    html, body {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .scoreboard-box {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 6px;
+      padding: 0;
+      overflow: visible; /* Permet au badge +3 d'émerger au-dessus du bloc */
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      height: 60px;
+    }
+
+    .team-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* CONTENEUR SCORE AVEC ANCRAGE DE L'ANIMATION */
+    .score-container {
+      min-width: 70px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 15px;
+      border-left: 1px solid rgba(255, 255, 255, 0.15);
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+    }
+
+    .score {
+      font-size: 2.8rem;
+      font-weight: 700;
+      line-height: 1;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    /* ANIMATION BADGE 👌 +3 AU-DESSUS DU SCORE */
+    .hand-3pt-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid #ffb703;
+      padding: 3px 10px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(255, 183, 3, 0.8);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    .hand-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 4px rgba(255, 183, 3, 0.6));
+    }
+
+    .hand-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #ffb703;
+      text-shadow: 0 0 8px rgba(255, 183, 3, 0.9);
+      line-height: 1;
+    }
+
+    /* ÉTAPES DE L'ANIMATION DU BADGE */
+    .hand-3pt-badge.active {
+      animation: popHandScore 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popHandScore {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 10px) scale(0.3);
+      }
+      20% {
+        opacity: 1;
+        transform: translate(-50%, -35px) scale(1.15);
+      }
+      35% {
+        transform: translate(-50%, -30px) scale(1);
+      }
+      75% {
+        opacity: 1;
+        transform: translate(-50%, -38px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -55px) scale(0.8);
+      }
+    }
+
+    /* REBOND DU CHIFFRE DU SCORE */
+    .score.bump {
+      animation: scoreBump 0.4s ease-out;
+    }
+
+    @keyframes scoreBump {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.35); color: #ffb703; }
+      100% { transform: scale(1); }
+    }
+
+    .divider {
+      width: 3px;
+      height: 40px;
+    }
+
+    .info-box {
+      height: 60px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+      margin-left: -5px;
+    }
+
+    .period {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding-left: 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* POLICES DE CARACTÈRES */
+    .font-default .score, .font-default .period { font-family: 'Teko', sans-serif; }
+    .font-default .team-name { font-family: 'Montserrat', sans-serif; }
+
+    .font-impact .score, .font-impact .period, .font-impact .team-name { font-family: 'Impact', 'Arial Black', sans-serif; }
+    .font-impact .score { font-size: 2.4rem; }
+    .font-impact .period { font-size: 1.8rem; }
+
+    .font-bebas .score, .font-bebas .period, .font-bebas .team-name { font-family: 'Bebas Neue', cursive; letter-spacing: 1.5px; }
+    .font-bebas .score { font-size: 3rem; }
+
+    .font-chakra .score, .font-chakra .period, .font-chakra .team-name { font-family: 'Chakra Petch', sans-serif; }
+    .font-chakra .score { font-size: 2.3rem; }
+    .font-chakra .period { font-size: 1.7rem; }
+
+    .font-russo .score, .font-russo .period, .font-russo .team-name { font-family: 'Russo One', sans-serif; }
+    .font-russo .score { font-size: 2.2rem; }
+    .font-russo .period { font-size: 1.6rem; }
+
+    .font-oswald .score, .font-oswald .period, .font-oswald .team-name { font-family: 'Oswald', sans-serif; }
+    .font-oswald .score { font-size: 2.6rem; }
+
+    /* THÈMES COULEURS */
+    .theme-nhbs-red {
+      background: linear-gradient(135deg, #120305 0%, #2b080c 100%);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(224, 30, 55, 0.3);
+      border: 1px solid rgba(224, 30, 55, 0.5);
+    }
+    .theme-nhbs-red .team-name { color: #f1faee; }
+    .theme-nhbs-red .score-container { background: linear-gradient(180deg, #d90429 0%, #780000 100%); }
+    .theme-nhbs-red .score { color: #ffffff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.6); }
+    .theme-nhbs-red .divider { background: rgba(224, 30, 55, 0.4); }
+    .theme-nhbs-red .info-box { background: linear-gradient(135deg, #ef233c 0%, #a8031d 100%); }
+
+    .theme-ocean-blue {
+      background: linear-gradient(135deg, #021526 0%, #032541 100%);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 180, 216, 0.2);
+      border: 1px solid rgba(0, 180, 216, 0.4);
+    }
+    .theme-ocean-blue .team-name { color: #e0f7fa; }
+    .theme-ocean-blue .score-container { background: linear-gradient(180deg, #0077b6 0%, #03045e 100%); }
+    .theme-ocean-blue .score { color: #90e0ef; text-shadow: 0 0 10px rgba(144, 224, 239, 0.5); }
+    .theme-ocean-blue .divider { background: rgba(0, 180, 216, 0.3); }
+    .theme-ocean-blue .info-box { background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); }
+
+    .theme-dark-gold {
+      background: linear-gradient(135deg, #111111 0%, #222222 100%);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.5);
+    }
+    .theme-dark-gold .team-name { color: #fff8e7; }
+    .theme-dark-gold .score-container { background: linear-gradient(180deg, #d4af37 0%, #8a711e 100%); }
+    .theme-dark-gold .score { color: #ffffff; text-shadow: 0 0 8px rgba(0,0,0,0.5); }
+    .theme-dark-gold .divider { background: rgba(212, 175, 55, 0.4); }
+    .theme-dark-gold .info-box { background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); }
+
+    .theme-emerald-green {
+      background: linear-gradient(135deg, #051e11 0%, #0b3c21 100%);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(46, 204, 113, 0.2);
+      border: 1px solid rgba(46, 204, 113, 0.4);
+    }
+    .theme-emerald-green .team-name { color: #e8f8f5; }
+    .theme-emerald-green .score-container { background: linear-gradient(180deg, #27ae60 0%, #145a32 100%); }
+    .theme-emerald-green .score { color: #2ecc71; text-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
+    .theme-emerald-green .divider { background: rgba(46, 204, 113, 0.3); }
+    .theme-emerald-green .info-box { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+  </style>
+</head>
+<body>
+
+  <div class="scoreboard-box theme-nhbs-red font-default" id="boardBox">
+    <!-- ÉQUIPE A -->
+    <div class="team">
+      <span class="team-name" id="teamA">EQUIPE A</span>
+    </div>
+    <div class="score-container">
+      <span class="score" id="scoreA">0</span>
+      <!-- BADGE ANIMÉ MAIN 👌 +3 -->
+      <div class="hand-3pt-badge" id="badgeA">
+        <span class="hand-icon">👌</span>
+        <span class="hand-text">+3</span>
+      </div>
+    </div>
+
+    <!-- SÉPARATEUR -->
+    <div class="divider"></div>
+
+    <!-- ÉQUIPE B -->
+    <div class="score-container">
+      <span class="score" id="scoreB">0</span>
+      <!-- BADGE ANIMÉ MAIN 👌 +3 -->
+      <div class="hand-3pt-badge" id="badgeB">
+        <span class="hand-icon">👌</span>
+        <span class="hand-text">+3</span>
+      </div>
+    </div>
+    <div class="team">
+      <span class="team-name" id="teamB">EQUIPE B</span>
+    </div>
+
+    <!-- BADGE PÉRIODE -->
+    <div class="info-box">
+      <span class="period" id="period">Q1</span>
+    </div>
   </div>
-</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      databaseURL: "https://scoreboard-live-98477-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const scoreRef = ref(db, 'scoreboard');
+
+    let last3PointerTimestamp = null;
+
+    onValue(scoreRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        if (data.teamA !== undefined) document.getElementById('teamA').innerText = data.teamA;
+        if (data.teamB !== undefined) document.getElementById('teamB').innerText = data.teamB;
+        if (data.scoreA !== undefined) document.getElementById('scoreA').innerText = data.scoreA;
+        if (data.scoreB !== undefined) document.getElementById('scoreB').innerText = data.scoreB;
+        if (data.period !== undefined) document.getElementById('period').innerText = data.period;
+        
+        // Appliquer Thème & Police
+        const boardBox = document.getElementById('boardBox');
+        const activeTheme = data.theme || "nhbs-red";
+        const activeFont = data.font || "font-default";
+        boardBox.className = `scoreboard-box theme-${activeTheme} ${activeFont}`;
+
+        // Déclencher l'animation lors du clic sur le bouton 3 points
+        if (data.threePointer && data.threePointer.timestamp !== last3PointerTimestamp) {
+          last3PointerTimestamp = data.threePointer.timestamp;
+          trigger3PointHand(data.threePointer.team);
+        }
+      }
+    });
+
+    function trigger3PointHand(team) {
+      const badgeElem = document.getElementById(team === 'A' ? 'badgeA' : 'badgeB');
+      const scoreElem = document.getElementById(team === 'A' ? 'scoreA' : 'scoreB');
+
+      // Réinitialisation des classes d'animation
+      badgeElem.classList.remove('active');
+      scoreElem.classList.remove('bump');
+
+      void badgeElem.offsetWidth; // Force le recalcul du navigateur pour relancer l'animation CSS
+
+      badgeElem.classList.add('active');
+      scoreElem.classList.add('bump');
+
+      setTimeout(() => {
+        scoreElem.classList.remove('bump');
+      }, 400);
+    }
+  </script>
+</body>
+</html>
