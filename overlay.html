@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Scoreboard Overlay - Ocean Theme</title>
+  <title>Scoreboard Overlay - Dynamic Themes</title>
   <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -20,16 +20,14 @@
       align-items: center;
     }
 
+    /* STRUCTURE DE BASE */
     .scoreboard-box {
       display: inline-flex;
       align-items: center;
-      background: linear-gradient(135deg, #021526 0%, #032541 100%);
-      color: #fff;
       border-radius: 6px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 180, 216, 0.2);
-      border: 1px solid rgba(0, 180, 216, 0.4);
       padding: 0;
       overflow: hidden;
+      transition: all 0.4s ease;
     }
 
     .team {
@@ -44,39 +42,33 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: #e0f7fa;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     .score-container {
-      background: linear-gradient(180deg, #0077b6 0%, #03045e 100%);
       min-width: 55px;
       height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 0 15px;
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 1px solid rgba(255, 255, 255, 0.15);
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .score {
       font-family: 'Teko', sans-serif;
       font-size: 2.8rem;
       font-weight: 700;
-      color: #90e0ef;
-      text-shadow: 0 0 10px rgba(144, 224, 239, 0.5);
       line-height: 1;
     }
 
     .divider {
       width: 3px;
       height: 40px;
-      background: rgba(0, 180, 216, 0.3);
     }
 
     .info-box {
-      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
       height: 60px;
       padding: 0 20px;
       display: flex;
@@ -96,11 +88,63 @@
       padding-left: 8px;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
+
+    /* =================================================== */
+    /* STYLES DES THÈMES */
+    /* =================================================== */
+
+    /* 🔴 THÈME NHBS RED (Rouge Intense & Noir Carbon) */
+    .theme-nhbs-red {
+      background: linear-gradient(135deg, #120305 0%, #2b080c 100%);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(224, 30, 55, 0.3);
+      border: 1px solid rgba(224, 30, 55, 0.5);
+    }
+    .theme-nhbs-red .team-name { color: #f1faee; }
+    .theme-nhbs-red .score-container { background: linear-gradient(180deg, #d90429 0%, #780000 100%); }
+    .theme-nhbs-red .score { color: #ffffff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.6); }
+    .theme-nhbs-red .divider { background: rgba(224, 30, 55, 0.4); }
+    .theme-nhbs-red .info-box { background: linear-gradient(135deg, #ef233c 0%, #a8031d 100%); }
+
+    /* 🔵 THÈME OCEAN BLUE */
+    .theme-ocean-blue {
+      background: linear-gradient(135deg, #021526 0%, #032541 100%);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 180, 216, 0.2);
+      border: 1px solid rgba(0, 180, 216, 0.4);
+    }
+    .theme-ocean-blue .team-name { color: #e0f7fa; }
+    .theme-ocean-blue .score-container { background: linear-gradient(180deg, #0077b6 0%, #03045e 100%); }
+    .theme-ocean-blue .score { color: #90e0ef; text-shadow: 0 0 10px rgba(144, 224, 239, 0.5); }
+    .theme-ocean-blue .divider { background: rgba(0, 180, 216, 0.3); }
+    .theme-ocean-blue .info-box { background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); }
+
+    /* 🟡 THÈME DARK GOLD */
+    .theme-dark-gold {
+      background: linear-gradient(135deg, #111111 0%, #222222 100%);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.5);
+    }
+    .theme-dark-gold .team-name { color: #fff8e7; }
+    .theme-dark-gold .score-container { background: linear-gradient(180deg, #d4af37 0%, #8a711e 100%); }
+    .theme-dark-gold .score { color: #ffffff; text-shadow: 0 0 8px rgba(0,0,0,0.5); }
+    .theme-dark-gold .divider { background: rgba(212, 175, 55, 0.4); }
+    .theme-dark-gold .info-box { background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); }
+
+    /* 🟢 THÈME EMERALD GREEN */
+    .theme-emerald-green {
+      background: linear-gradient(135deg, #051e11 0%, #0b3c21 100%);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(46, 204, 113, 0.2);
+      border: 1px solid rgba(46, 204, 113, 0.4);
+    }
+    .theme-emerald-green .team-name { color: #e8f8f5; }
+    .theme-emerald-green .score-container { background: linear-gradient(180deg, #27ae60 0%, #145a32 100%); }
+    .theme-emerald-green .score { color: #2ecc71; text-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
+    .theme-emerald-green .divider { background: rgba(46, 204, 113, 0.3); }
+    .theme-emerald-green .info-box { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
   </style>
 </head>
 <body>
 
-  <div class="scoreboard-box">
+  <div class="scoreboard-box theme-nhbs-red" id="boardBox">
     <!-- ÉQUIPE A -->
     <div class="team">
       <span class="team-name" id="teamA">EQUIPE A</span>
@@ -146,6 +190,12 @@
         if (data.scoreA !== undefined) document.getElementById('scoreA').innerText = data.scoreA;
         if (data.scoreB !== undefined) document.getElementById('scoreB').innerText = data.scoreB;
         if (data.period !== undefined) document.getElementById('period').innerText = data.period;
+        
+        // Mise à jour dynamique du thème
+        if (data.theme) {
+          const boardBox = document.getElementById('boardBox');
+          boardBox.className = "scoreboard-box theme-" + data.theme;
+        }
       }
     });
   </script>

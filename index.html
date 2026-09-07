@@ -14,9 +14,9 @@
       .grid { grid-template-columns: 1fr; }
     }
     label { font-size: 0.8rem; color: #aaa; display: block; margin-bottom: 5px; }
-    input { width: 100%; padding: 10px; background: #2a2a32; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 1rem; }
+    input, select { width: 100%; padding: 10px; background: #2a2a32; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 1rem; }
     
-    .score-display { text-align: center; font-size: 2.5rem; font-weight: bold; margin: 10px 0; color: #90e0ef; }
+    .score-display { text-align: center; font-size: 2.5rem; font-weight: bold; margin: 10px 0; color: #ff4d4d; }
     
     .btn-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
     .btn-group-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
@@ -25,8 +25,8 @@
     button:active { opacity: 0.8; }
     
     .btn-minus { background: #3a2228; color: #ff6b6b; border: 1px solid #5c2b35; }
-    .btn-plus { background: #0070f3; }
-    .btn-plus-accent { background: #00b4d8; }
+    .btn-plus { background: #c1121f; }
+    .btn-plus-accent { background: #780000; }
   </style>
 </head>
 <body>
@@ -86,6 +86,17 @@
     </div>
   </div>
 
+  <!-- CHOIX DU THÈME GRAPHIQUE -->
+  <div class="card">
+    <label>THÈME COULEUR OVERLAY</label>
+    <select id="theme_select" onchange="updateData()">
+      <option value="nhbs-red">🔴 NHBS Red (Rouge & Noir)</option>
+      <option value="ocean-blue">🔵 Ocean Blue (Bleu Cyan)</option>
+      <option value="dark-gold">🟡 Dark Gold (Noir & Or)</option>
+      <option value="emerald-green">🟢 Emerald Green (Vert Émeraude)</option>
+    </select>
+  </div>
+
   <!-- FIREBASE SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -105,10 +116,10 @@
       scoreA: 0,
       scoreB: 0,
       periodNum: 1,
-      period: "Q1"
+      period: "Q1",
+      theme: "nhbs-red"
     };
 
-    // Synchronisation en temps réel avec Firebase
     onValue(scoreRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -118,6 +129,7 @@
         document.getElementById('scoreA_val').innerText = state.scoreA !== undefined ? state.scoreA : 0;
         document.getElementById('scoreB_val').innerText = state.scoreB !== undefined ? state.scoreB : 0;
         document.getElementById('period').value = state.period || "Q1";
+        document.getElementById('theme_select').value = state.theme || "nhbs-red";
       }
     });
 
@@ -125,6 +137,7 @@
       state.teamA = document.getElementById('teamA_name').value;
       state.teamB = document.getElementById('teamB_name').value;
       state.period = document.getElementById('period').value;
+      state.theme = document.getElementById('theme_select').value;
       set(scoreRef, state);
     };
 
@@ -139,7 +152,6 @@
     };
 
     window.changePeriod = (delta) => {
-      // Déduction du numéro de quart-temps depuis la valeur actuelle si possible
       const currentPeriod = document.getElementById('period').value;
       const match = currentPeriod.match(/\d+/);
       
