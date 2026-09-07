@@ -2,66 +2,126 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Scoreboard Overlay</title>
+  <title>Scoreboard Overlay - Ocean Theme</title>
+  <!-- Police sportive moderne -->
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; font-family: 'Arial Black', sans-serif; }
-    body { margin: 0; padding: 20px; background: transparent; overflow: hidden; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 30px;
+      background: transparent;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+    }
 
-    /* CONTENEUR OVERLAY */
+    /* CONTENEUR PRINCIPAL STYLE OCEAN */
     .scoreboard-box {
       display: inline-flex;
       align-items: center;
-      background: rgba(15, 15, 20, 0.9);
+      background: linear-gradient(135deg, #021526 0%, #032541 100%);
       color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 180, 216, 0.2);
+      border: 1px solid rgba(0, 180, 216, 0.4);
+      padding: 0;
       overflow: hidden;
     }
 
+    /* BLOC ÉQUIPE */
     .team {
       display: flex;
       align-items: center;
-      padding: 8px 15px;
-      font-size: 1.1rem;
+      padding: 10px 20px;
+      height: 60px;
     }
 
-    .team-name { text-transform: uppercase; margin-right: 12px; }
-    .score { font-size: 1.4rem; color: #ffcc00; }
+    .team-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #e0f7fa;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
 
-    .divider { width: 2px; height: 30px; background: rgba(255,255,255,0.2); }
-
-    .info-box {
-      background: #0070f3;
-      padding: 8px 15px;
+    /* SCORE DYNAMIQUE AVEC DÉGRADÉ CYAN */
+    .score-container {
+      background: linear-gradient(180deg, #0077b6 0%, #03045e 100%);
+      min-width: 55px;
+      height: 60px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-width: 80px;
+      padding: 0 15px;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .timer { font-size: 1.2rem; }
-    .period { font-size: 0.75rem; opacity: 0.8; }
+    .score {
+      font-family: 'Teko', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #90e0ef;
+      text-shadow: 0 0 10px rgba(144, 224, 239, 0.5);
+      line-height: 1;
+    }
+
+    /* SÉPARATEUR BISEAUTÉ */
+    .divider {
+      width: 3px;
+      height: 40px;
+      background: rgba(0, 180, 216, 0.3);
+    }
+
+    /* BADGE QUART-TEMPS / PÉRIODE */
+    .info-box {
+      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+      height: 60px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+      margin-left: -5px;
+    }
+
+    .period {
+      font-family: 'Teko', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding-left: 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
   </style>
 </head>
 <body>
 
   <div class="scoreboard-box">
+    <!-- ÉQUIPE A -->
     <div class="team">
-      <span class="team-name" id="teamA">EQUIPE A</span>
+      <span class="team-name" id="teamA">NHBS</span>
+    </div>
+    <div class="score-container">
       <span class="score" id="scoreA">0</span>
     </div>
 
+    <!-- SÉPARATEUR -->
     <div class="divider"></div>
 
-    <div class="team">
+    <!-- ÉQUIPE B -->
+    <div class="score-container">
       <span class="score" id="scoreB">0</span>
-      <span class="team-name" style="margin-left: 12px; margin-right:0;" id="teamB">EQUIPE B</span>
+    </div>
+    <div class="team">
+      <span class="team-name" id="teamB">TEAM</span>
     </div>
 
+    <!-- BADGE PÉRIODE -->
     <div class="info-box">
-      <span class="timer" id="timer">10:00</span>
       <span class="period" id="period">Q1</span>
     </div>
   </div>
@@ -71,7 +131,7 @@
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
-      databaseURL: "https://scoreboard-live-98477-default-rtdb.europe-west1.firebasedatabase.app/" // REMPLACER PAR VOTRE URL
+      databaseURL: "https://scoreboard-live-98477-default-rtdb.europe-west1.firebasedatabase.app" // REMPLACER PAR VOTRE URL FIREBASE
     };
 
     const app = initializeApp(firebaseConfig);
@@ -81,12 +141,11 @@
     onValue(scoreRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        document.getElementById('teamA').innerText = data.teamA;
-        document.getElementById('teamB').innerText = data.teamB;
-        document.getElementById('scoreA').innerText = data.scoreA;
-        document.getElementById('scoreB').innerText = data.scoreB;
-        document.getElementById('period').innerText = data.period;
-        document.getElementById('timer').innerText = data.timer;
+        if (data.teamA) document.getElementById('teamA').innerText = data.teamA;
+        if (data.teamB) document.getElementById('teamB').innerText = data.teamB;
+        if (data.scoreA !== undefined) document.getElementById('scoreA').innerText = data.scoreA;
+        if (data.scoreB !== undefined) document.getElementById('scoreB').innerText = data.scoreB;
+        if (data.period) document.getElementById('period').innerText = data.period;
       }
     });
   </script>

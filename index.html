@@ -16,9 +16,6 @@
     .score-val { font-size: 2rem; font-weight: bold; }
     button { background: #0070f3; color: white; border: none; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; }
     button:active { opacity: 0.8; }
-    button.danger { background: #e53e3e; }
-    button.success { background: #38a169; }
-    .timer-btn { width: 100%; margin-top: 10px; padding: 15px; font-size: 1.1rem; }
   </style>
 </head>
 <body>
@@ -48,19 +45,10 @@
     </div>
   </div>
 
-  <!-- PÉRIODE ET TIMER -->
+  <!-- PÉRIODE / QUART-TEMPS -->
   <div class="card">
-    <div class="grid">
-      <div>
-        <label>PÉRIODE / QT</label>
-        <input type="text" id="period" value="Q1" onchange="updateData()">
-      </div>
-      <div>
-        <label>TEMPS (MM:SS)</label>
-        <input type="text" id="timer_display" value="10:00" onchange="updateData()">
-      </div>
-    </div>
-    <button class="success timer-btn" id="timer_btn" onclick="toggleTimer()">DÉMARRER CHRONO</button>
+    <label>PÉRIODE / QT</label>
+    <input type="text" id="period" value="Q1" onchange="updateData()">
   </div>
 
   <!-- FIREBASE SDK -->
@@ -82,9 +70,7 @@
       teamB: "EQUIPE B",
       scoreA: 0,
       scoreB: 0,
-      period: "Q1",
-      timer: "10:00",
-      isRunning: false
+      period: "Q1"
     };
 
     // Synchronisation initiale
@@ -97,9 +83,6 @@
         document.getElementById('scoreA_val').innerText = state.scoreA;
         document.getElementById('scoreB_val').innerText = state.scoreB;
         document.getElementById('period').value = state.period;
-        document.getElementById('timer_display').value = state.timer;
-        document.getElementById('timer_btn').innerText = state.isRunning ? "PAUSE CHRONO" : "DÉMARRER CHRONO";
-        document.getElementById('timer_btn').className = state.isRunning ? "danger timer-btn" : "success timer-btn";
       }
     });
 
@@ -107,18 +90,16 @@
       state.teamA = document.getElementById('teamA_name').value;
       state.teamB = document.getElementById('teamB_name').value;
       state.period = document.getElementById('period').value;
-      state.timer = document.getElementById('timer_display').value;
       set(scoreRef, state);
     };
 
     window.changeScore = (team, delta) => {
       if (team === 'A') state.scoreA = Math.max(0, state.scoreA + delta);
       if (team === 'B') state.scoreB = Math.max(0, state.scoreB + delta);
-      set(scoreRef, state);
-    };
-
-    window.toggleTimer = () => {
-      state.isRunning = !state.isRunning;
+      
+      document.getElementById('scoreA_val').innerText = state.scoreA;
+      document.getElementById('scoreB_val').innerText = state.scoreB;
+      
       set(scoreRef, state);
     };
   </script>
