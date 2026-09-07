@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Scoreboard Overlay - +3 In-Score Animation</title>
+  <title>Scoreboard Overlay - Hand 3 Points In-Score Animation</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Chakra+Petch:wght@700&family=Montserrat:wght@800&family=Oswald:wght@700&family=Russo+One&family=Teko:wght@600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -25,7 +25,7 @@
       align-items: center;
       border-radius: 6px;
       padding: 0;
-      overflow: hidden;
+      overflow: visible; /* Permet à la main d'émerger élégamment au-dessus du bloc */
       transition: all 0.4s ease;
       position: relative;
     }
@@ -45,9 +45,9 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
-    /* CONTENEUR SCORE AVEC SUPPORT D'ANIMATION INTÉGRÉE */
+    /* CONTENEUR SCORE AVEC ANCRAGE DE L'ANIMATION */
     .score-container {
-      min-width: 65px;
+      min-width: 70px;
       height: 60px;
       display: flex;
       align-items: center;
@@ -65,47 +65,69 @@
       transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
-    /* ANIMATION "+3" INTÉGRÉE DANS LE SCORE */
-    .plus-three-pop {
+    /* ANIMATION : MAIN "3" + +3 AU-DESSUS DU SCORE */
+    .hand-3pt-badge {
       position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #ffb703;
+      padding: 2px 8px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(255, 183, 3, 0.8);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    .hand-icon {
+      font-size: 1.5rem;
+      filter: drop-shadow(0 0 5px #ffb703);
+    }
+
+    .hand-text {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 3.2rem;
+      font-size: 1.6rem;
       font-weight: 900;
       color: #ffb703;
-      text-shadow: 0 0 15px rgba(255, 183, 3, 0.9), 0 0 2px #ffffff;
-      opacity: 0;
-      transform: scale(0.3) translateY(10px);
-      pointer-events: none;
-      z-index: 5;
+      text-shadow: 0 0 8px rgba(255, 183, 3, 0.9);
+      line-height: 1;
     }
 
-    .plus-three-pop.active {
-      animation: inScorePlusThree 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    /* ÉTAPES DE L'ANIMATION DU BADGE */
+    .hand-3pt-badge.active {
+      animation: popHandScore 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    @keyframes inScorePlusThree {
+    @keyframes popHandScore {
       0% {
         opacity: 0;
-        transform: scale(0.3) translateY(10px);
+        transform: translate(-50%, 10px) scale(0.3);
       }
       20% {
         opacity: 1;
-        transform: scale(1.4) translateY(-3px);
+        transform: translate(-50%, -35px) scale(1.15);
       }
       35% {
-        transform: scale(1) translateY(0);
+        transform: translate(-50%, -30px) scale(1);
       }
       75% {
         opacity: 1;
-        transform: scale(1) translateY(-10px);
+        transform: translate(-50%, -38px) scale(1);
       }
       100% {
         opacity: 0;
-        transform: scale(0.8) translateY(-25px);
+        transform: translate(-50%, -55px) scale(0.8);
       }
     }
 
-    /* EFFET DE REBOND/FLASH DU CHIFFRE DE SCORE */
+    /* REBOND DU CHIFFRE DU SCORE */
     .score.bump {
       animation: scoreBump 0.4s ease-out;
     }
@@ -141,7 +163,7 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
-    /* POLICES */
+    /* POLICES DE CARACTÈRES */
     .font-default .score, .font-default .period { font-family: 'Teko', sans-serif; }
     .font-default .team-name { font-family: 'Montserrat', sans-serif; }
 
@@ -218,7 +240,11 @@
     </div>
     <div class="score-container">
       <span class="score" id="scoreA">0</span>
-      <div class="plus-three-pop" id="popA">+3</div>
+      <!-- BADGE ANIMÉ MAIN + 3 -->
+      <div class="hand-3pt-badge" id="badgeA">
+        <span class="hand-icon">🤟</span>
+        <span class="hand-text">+3</span>
+      </div>
     </div>
 
     <!-- SÉPARATEUR -->
@@ -227,7 +253,11 @@
     <!-- ÉQUIPE B -->
     <div class="score-container">
       <span class="score" id="scoreB">0</span>
-      <div class="plus-three-pop" id="popB">+3</div>
+      <!-- BADGE ANIMÉ MAIN + 3 -->
+      <div class="hand-3pt-badge" id="badgeB">
+        <span class="hand-icon">🤟</span>
+        <span class="hand-text">+3</span>
+      </div>
     </div>
     <div class="team">
       <span class="team-name" id="teamB">EQUIPE B</span>
@@ -262,31 +292,31 @@
         if (data.scoreB !== undefined) document.getElementById('scoreB').innerText = data.scoreB;
         if (data.period !== undefined) document.getElementById('period').innerText = data.period;
         
-        // Thème & Font
+        // Appliquer Thème & Police
         const boardBox = document.getElementById('boardBox');
         const activeTheme = data.theme || "nhbs-red";
         const activeFont = data.font || "font-default";
         boardBox.className = `scoreboard-box theme-${activeTheme} ${activeFont}`;
 
-        // Déclenchement de l'animation +3
+        // Déclencher l'animation
         if (data.threePointer && data.threePointer.timestamp !== last3PointerTimestamp) {
           last3PointerTimestamp = data.threePointer.timestamp;
-          trigger3PointInScore(data.threePointer.team);
+          trigger3PointHand(data.threePointer.team);
         }
       }
     });
 
-    function trigger3PointInScore(team) {
-      const popElem = document.getElementById(team === 'A' ? 'popA' : 'popB');
+    function trigger3PointHand(team) {
+      const badgeElem = document.getElementById(team === 'A' ? 'badgeA' : 'badgeB');
       const scoreElem = document.getElementById(team === 'A' ? 'scoreA' : 'scoreB');
 
       // Réinitialisation des classes d'animation
-      popElem.classList.remove('active');
+      badgeElem.classList.remove('active');
       scoreElem.classList.remove('bump');
 
-      void popElem.offsetWidth; // Force Reflow CSS
+      void badgeElem.offsetWidth; // Force Reflow CSS
 
-      popElem.classList.add('active');
+      badgeElem.classList.add('active');
       scoreElem.classList.add('bump');
 
       setTimeout(() => {
