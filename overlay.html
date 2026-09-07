@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoreboard Overlay</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Arial Black', sans-serif; }
+    body { margin: 0; padding: 20px; background: transparent; overflow: hidden; }
+
+    /* CONTENEUR OVERLAY */
+    .scoreboard-box {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(15, 15, 20, 0.9);
+      color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      padding: 8px 15px;
+      font-size: 1.1rem;
+    }
+
+    .team-name { text-transform: uppercase; margin-right: 12px; }
+    .score { font-size: 1.4rem; color: #ffcc00; }
+
+    .divider { width: 2px; height: 30px; background: rgba(255,255,255,0.2); }
+
+    .info-box {
+      background: #0070f3;
+      padding: 8px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 80px;
+    }
+
+    .timer { font-size: 1.2rem; }
+    .period { font-size: 0.75rem; opacity: 0.8; }
+  </style>
+</head>
+<body>
+
+  <div class="scoreboard-box">
+    <div class="team">
+      <span class="team-name" id="teamA">EQUIPE A</span>
+      <span class="score" id="scoreA">0</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="team">
+      <span class="score" id="scoreB">0</span>
+      <span class="team-name" style="margin-left: 12px; margin-right:0;" id="teamB">EQUIPE B</span>
+    </div>
+
+    <div class="info-box">
+      <span class="timer" id="timer">10:00</span>
+      <span class="period" id="period">Q1</span>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      databaseURL: "https://VOTRE_FIREBASE_ID-default-rtdb.firebaseio.com" // REMPLACER PAR VOTRE URL
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const scoreRef = ref(db, 'scoreboard');
+
+    onValue(scoreRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        document.getElementById('teamA').innerText = data.teamA;
+        document.getElementById('teamB').innerText = data.teamB;
+        document.getElementById('scoreA').innerText = data.scoreA;
+        document.getElementById('scoreB').innerText = data.scoreB;
+        document.getElementById('period').innerText = data.period;
+        document.getElementById('timer').innerText = data.timer;
+      }
+    });
+  </script>
+</body>
+</html>
