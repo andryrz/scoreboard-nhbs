@@ -18,7 +18,6 @@
     
     .score-display { text-align: center; font-size: 2.5rem; font-weight: bold; margin: 10px 0; color: #90e0ef; }
     
-    /* BOUTONS DE CONTROL */
     .btn-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
     .btn-group-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     
@@ -39,7 +38,7 @@
     <!-- ÉQUIPE DOMICILE -->
     <div class="card">
       <label>ÉQUIPE DOMICILE</label>
-      <input type="text" id="teamA_name" value="EQUIPE A" onchange="updateData()">
+      <input type="text" id="teamA_name" value="EQUIPE A" oninput="updateData()">
       
       <div class="score-display" id="scoreA_val">0</div>
       
@@ -59,7 +58,7 @@
     <!-- ÉQUIPE EXTÉRIEUR -->
     <div class="card">
       <label>ÉQUIPE EXTÉRIEUR</label>
-      <input type="text" id="teamB_name" value="EQUIPE B" onchange="updateData()">
+      <input type="text" id="teamB_name" value="EQUIPE B" oninput="updateData()">
       
       <div class="score-display" id="scoreB_val">0</div>
       
@@ -80,7 +79,7 @@
   <!-- PÉRIODE / QUART-TEMPS -->
   <div class="card">
     <label>PÉRIODE / QT</label>
-    <input type="text" id="period" value="Q1" onchange="updateData()">
+    <input type="text" id="period" value="Q1" oninput="updateData()">
     <div class="btn-group-2">
       <button class="btn-minus" onclick="changePeriod(-1)">-1 QT</button>
       <button class="btn-plus-accent" onclick="changePeriod(1)">+1 QT</button>
@@ -92,9 +91,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // --- CONFIGURATION FIREBASE ---
     const firebaseConfig = {
-      databaseURL: "https://VOTRE_FIREBASE_ID-default-rtdb.firebaseio.com" // REMPLACER PAR VOTRE URL FIREBASE
+      databaseURL: "https://scoreboard-live-98477-default-rtdb.europe-west1.firebasedatabase.app"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -110,16 +108,16 @@
       period: "Q1"
     };
 
-    // Synchronisation initiale
+    // Synchronisation en temps réel avec Firebase
     onValue(scoreRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         state = { ...state, ...data };
-        document.getElementById('teamA_name').value = state.teamA;
-        document.getElementById('teamB_name').value = state.teamB;
-        document.getElementById('scoreA_val').innerText = state.scoreA;
-        document.getElementById('scoreB_val').innerText = state.scoreB;
-        document.getElementById('period').value = state.period;
+        document.getElementById('teamA_name').value = state.teamA || "EQUIPE A";
+        document.getElementById('teamB_name').value = state.teamB || "EQUIPE B";
+        document.getElementById('scoreA_val').innerText = state.scoreA !== undefined ? state.scoreA : 0;
+        document.getElementById('scoreB_val').innerText = state.scoreB !== undefined ? state.scoreB : 0;
+        document.getElementById('period').value = state.period || "Q1";
       }
     });
 
@@ -131,8 +129,8 @@
     };
 
     window.changeScore = (team, delta) => {
-      if (team === 'A') state.scoreA = Math.max(0, state.scoreA + delta);
-      if (team === 'B') state.scoreB = Math.max(0, state.scoreB + delta);
+      if (team === 'A') state.scoreA = Math.max(0, (state.scoreA || 0) + delta);
+      if (team === 'B') state.scoreB = Math.max(0, (state.scoreB || 0) + delta);
       
       document.getElementById('scoreA_val').innerText = state.scoreA;
       document.getElementById('scoreB_val').innerText = state.scoreB;
@@ -141,7 +139,16 @@
     };
 
     window.changePeriod = (delta) => {
-      if (!state.periodNum) state.periodNum = 1;
+      // Déduction du numéro de quart-temps depuis la valeur actuelle si possible
+      const currentPeriod = document.getElementById('period').value;
+      const match = currentPeriod.match(/\d+/);
+      
+      if (match) {
+        state.periodNum = parseInt(match[0], 10);
+      } else if (!state.periodNum) {
+        state.periodNum = 1;
+      }
+
       state.periodNum = Math.max(1, state.periodNum + delta);
       state.period = "Q" + state.periodNum;
       

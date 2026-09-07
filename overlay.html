@@ -3,20 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Scoreboard Overlay - Ocean Theme</title>
-  <!-- Police sportive moderne -->
   <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
-    body {
-      margin: 0 auto;
-      padding: 30px;
+    
+    html, body {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
       background: transparent;
       overflow: hidden;
       font-family: 'Montserrat', sans-serif;
-      text-align: center; /* Centrage horizontal */
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* CONTENEUR PRINCIPAL STYLE OCEAN */
     .scoreboard-box {
       display: inline-flex;
       align-items: center;
@@ -29,7 +32,6 @@
       overflow: hidden;
     }
 
-    /* BLOC ÉQUIPE */
     .team {
       display: flex;
       align-items: center;
@@ -46,7 +48,6 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
-    /* SCORE DYNAMIQUE AVEC DÉGRADÉ CYAN */
     .score-container {
       background: linear-gradient(180deg, #0077b6 0%, #03045e 100%);
       min-width: 55px;
@@ -68,14 +69,12 @@
       line-height: 1;
     }
 
-    /* SÉPARATEUR BISEAUTÉ */
     .divider {
       width: 3px;
       height: 40px;
       background: rgba(0, 180, 216, 0.3);
     }
 
-    /* BADGE QUART-TEMPS / PÉRIODE */
     .info-box {
       background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
       height: 60px;
@@ -104,7 +103,7 @@
   <div class="scoreboard-box">
     <!-- ÉQUIPE A -->
     <div class="team">
-      <span class="team-name" id="teamA">NHBS</span>
+      <span class="team-name" id="teamA">EQUIPE A</span>
     </div>
     <div class="score-container">
       <span class="score" id="scoreA">0</span>
@@ -118,7 +117,7 @@
       <span class="score" id="scoreB">0</span>
     </div>
     <div class="team">
-      <span class="team-name" id="teamB">TEAM</span>
+      <span class="team-name" id="teamB">EQUIPE B</span>
     </div>
 
     <!-- BADGE PÉRIODE -->
@@ -132,7 +131,7 @@
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
-      databaseURL: "https://scoreboard-live-98477-default-rtdb.europe-west1.firebasedatabase.app" // REMPLACER PAR VOTRE URL FIREBASE
+      databaseURL: "https://scoreboard-live-98477-default-rtdb.europe-west1.firebasedatabase.app"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -142,11 +141,11 @@
     onValue(scoreRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        if (data.teamA) document.getElementById('teamA').innerText = data.teamA;
-        if (data.teamB) document.getElementById('teamB').innerText = data.teamB;
+        if (data.teamA !== undefined) document.getElementById('teamA').innerText = data.teamA;
+        if (data.teamB !== undefined) document.getElementById('teamB').innerText = data.teamB;
         if (data.scoreA !== undefined) document.getElementById('scoreA').innerText = data.scoreA;
         if (data.scoreB !== undefined) document.getElementById('scoreB').innerText = data.scoreB;
-        if (data.period) document.getElementById('period').innerText = data.period;
+        if (data.period !== undefined) document.getElementById('period').innerText = data.period;
       }
     });
   </script>
